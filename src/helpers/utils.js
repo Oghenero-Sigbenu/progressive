@@ -20,7 +20,7 @@ export const isValidEmail = (email) => {
 
 export const validatePhoneNumber = (phoneNumber) => {
   // Regular expression pattern for validating phone numbers
-  const phoneRegex = /^\d{10}$/; // Assumes 10 digits format
+  const phoneRegex = /^\d{11}$/; // Assumes 10 digits format
   return phoneRegex.test(phoneNumber);
 };
 

@@ -28,3 +28,30 @@ code {
   background-size: contain;
   background-repeat: no-repeat;
 }
+
+
+/* Scoped light theme for the AYD registration screen.
+   Overrides the shared dark design tokens (surface/ink/line) only inside
+   .ayd-light, so child components (Stepper, StepShell, FormField, Controls)
+   render as light without altering the global palette. */
+.ayd-light .bg-surface { background-color: #f7f5ef; }
+.ayd-light .bg-surface-raised { background-color: #ffffff; }
+.ayd-light .bg-surface-raised\/70 { background-color: rgb(255 255 255 / 0.85); }
+
+.ayd-light .text-ink { color: #18181b; }
+.ayd-light .text-ink-muted { color: #52525b; }
+.ayd-light .text-ink-subtle { color: #71717a; }
+
+.ayd-light .border-line { border-color: rgb(0 0 0 / 0.10); }
+.ayd-light .hover\:border-line-strong:hover { border-color: rgb(0 0 0 / 0.22); }
+
+.ayd-light .bg-white\/5 { background-color: rgb(0 0 0 / 0.04); }
+.ayd-light .bg-white\/10 { background-color: rgb(0 0 0 / 0.08); }
+.ayd-light .hover\:bg-white\/10:hover { background-color: rgb(0 0 0 / 0.10); }
+.ayd-light .bg-white\/\[0\.04\] { background-color: rgb(0 0 0 / 0.035); }
+.ayd-light .focus\:bg-white\/\[0\.08\]:focus { background-color: rgb(0 0 0 / 0.06); }
+
+/* Ghost button focus ring offset sits on the section background. */
+.ayd-light .focus-visible\:ring-offset-surface:focus-visible {
+  --tw-ring-offset-color: #f7f5ef;
+}

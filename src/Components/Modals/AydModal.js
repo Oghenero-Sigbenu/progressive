@@ -33,7 +33,7 @@ const AYDModal = () => {
     firstName: "",
     lastName: "",
     email: "",
-    aydId: "",
+    aydId: "216bceea-1b7e-44e9-8607-cc0dd74e1f30",
     position: "",
     phoneNumber: 0,
     gender: "",
@@ -79,8 +79,9 @@ const AYDModal = () => {
     setParishError(null);
     const { items, error } = await safeFetchList(
       fetchAllPaidParishByDeanery,
-      deaneryId
+      deaneryId,
     );
+    console.log(items);
     setParishes(items);
     setParishError(error);
     setLoadingParishes(false);
@@ -119,7 +120,7 @@ const AYDModal = () => {
 
   const sortedDeaneries = useMemo(
     () => [...deaneries].sort((a, b) => (a.name > b.name ? 1 : -1)),
-    [deaneries]
+    [deaneries],
   );
 
   useEffect(() => {
@@ -130,21 +131,21 @@ const AYDModal = () => {
 
   const filteredParish = useMemo(
     () => (parishes || []).filter((p) => p?.hasPaid !== false),
-    [parishes]
+    [parishes],
   );
 
   const isFormStep = activeStep >= 1 && activeStep <= 4;
 
   return (
-    <section className="relative min-h-screen w-full overflow-hidden bg-surface">
+    <section className="ayd-light relative min-h-screen w-full overflow-hidden bg-[#f7f5ef]">
       {/* Cinematic backdrop */}
       <div aria-hidden className="pointer-events-none absolute inset-0">
-        <div className="absolute inset-0 bg-mesh-dark bg-[length:200%_200%] animate-gradient-pan" />
-        <div className="absolute inset-0 bg-noise opacity-[0.06] mix-blend-soft-light" />
-        <div className="absolute -top-40 -left-24 h-[32rem] w-[32rem] rounded-full bg-primary/20 blur-[120px] animate-float-lg" />
+        <div className="absolute inset-0 bg-mesh-gold bg-[length:200%_200%] animate-gradient-pan opacity-80" />
+        <div className="absolute inset-0 bg-noise opacity-[0.04] mix-blend-multiply" />
+        <div className="absolute -top-40 -left-24 h-[32rem] w-[32rem] rounded-full bg-primary/25 blur-[120px] animate-float-lg" />
         <div className="absolute -bottom-40 -right-24 h-[34rem] w-[34rem] rounded-full bg-green/20 blur-[130px] animate-float" />
-        <div className="absolute top-1/3 left-1/2 h-[22rem] w-[22rem] -translate-x-1/2 rounded-full bg-primary-shade/10 blur-[100px] animate-pulse-soft" />
-        <div className="absolute inset-0 bg-gradient-to-b from-surface/50 via-transparent to-surface" />
+        <div className="absolute top-1/3 left-1/2 h-[22rem] w-[22rem] -translate-x-1/2 rounded-full bg-primary-shade/15 blur-[100px] animate-pulse-soft" />
+        <div className="absolute inset-0 bg-gradient-to-b from-[#f7f5ef]/60 via-transparent to-[#f7f5ef]" />
       </div>
 
       <div className="relative z-10 flex min-h-screen flex-col">
@@ -171,14 +172,14 @@ const AYDModal = () => {
             transition={{ duration: 0.6, delay: 0.15 }}
             className="text-center"
           >
-            <div className="inline-flex items-center gap-2 rounded-full border border-line bg-white/5 px-3.5 py-1 text-[11px] uppercase tracking-[0.22em] text-primary backdrop-blur-sm">
+            <div className="inline-flex items-center gap-2 rounded-full border border-black/10 bg-white/70 px-3.5 py-1 text-[11px] uppercase tracking-[0.22em] text-primary-shade backdrop-blur-sm">
               <span className="h-1.5 w-1.5 rounded-full bg-green animate-pulse-soft" />
               Registration {REGISTRATION_OPEN ? "Open" : "Closed"}
             </div>
-            <h1 className="mt-3 text-2xl md:text-4xl font-bold text-ink tracking-tight">
+            <h1 className="mt-3 text-2xl md:text-4xl font-bold text-zinc-900 tracking-tight">
               Archdiocesan Youth Day
             </h1>
-            <p className="mt-1 text-sm md:text-base text-ink-muted max-w-lg mx-auto">
+            <p className="mt-1 text-sm md:text-base text-zinc-600 max-w-lg mx-auto">
               Join the Catholic Youth of the Lagos Archdiocese in a day of
               faith, fellowship and celebration.
             </p>
@@ -217,13 +218,17 @@ const AYDModal = () => {
           <motion.div
             initial={{ opacity: 0, y: 24 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.7, delay: 0.35, ease: [0.22, 1, 0.36, 1] }}
+            transition={{
+              duration: 0.7,
+              delay: 0.35,
+              ease: [0.22, 1, 0.36, 1],
+            }}
             className="w-full max-w-2xl"
           >
             <div className="relative">
               {/* Card gradient border */}
-              <div className="absolute -inset-px rounded-3xl bg-gradient-to-br from-primary/40 via-primary/10 to-green/30 opacity-70 blur-[2px]" />
-              <div className="relative rounded-3xl border border-line bg-surface-raised/70 backdrop-blur-xl shadow-card-premium">
+              <div className="absolute -inset-px rounded-3xl bg-gradient-to-br from-primary/50 via-primary/15 to-green/40 opacity-80 blur-[2px]" />
+              <div className="relative rounded-3xl border border-black/10 bg-white/80 backdrop-blur-xl shadow-card-premium">
                 <div className="relative px-6 md:px-10 py-8 md:py-10">
                   <form
                     onSubmit={(e) => e.preventDefault()}
@@ -316,7 +321,7 @@ const AYDModal = () => {
           </motion.div>
         </div>
 
-        <footer className="py-6 text-center text-xs text-ink-subtle">
+        <footer className="py-6 text-center text-xs text-zinc-500">
           &copy; CYON Archdiocese of Lagos
         </footer>
       </div>

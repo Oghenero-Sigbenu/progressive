@@ -22,8 +22,7 @@ const ContactOptions = ({
   const [submitError, setSubmitError] = useState("");
 
   const phoneStr = String(phoneNumber ?? "");
-  const disableBtn =
-    phoneStr.length === 0 || isEmpty(email) || isEmpty(gender);
+  const disableBtn = phoneStr.length === 0 || isEmpty(email) || isEmpty(gender);
 
   const submitRequest = async () => {
     setLoading(true);
@@ -38,7 +37,7 @@ const ContactOptions = ({
       setLoading(false);
       setSubmitError(
         error?.response?.data?.msg ||
-          "We couldn't complete your registration. Please try again."
+          "We couldn't complete your registration. Please try again.",
       );
       console.error("Error fetching data:", error.response);
     }
@@ -54,7 +53,7 @@ const ContactOptions = ({
         label="Phone number"
         required
         type="tel"
-        inputMode="numeric"
+        inputMode="text"
         name="phoneNumber"
         value={phoneNumber}
         onChange={onChange}

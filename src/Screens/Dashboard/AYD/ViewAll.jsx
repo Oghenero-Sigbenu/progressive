@@ -2,9 +2,9 @@
 
 import React, { useEffect, useMemo, useState } from "react";
 import ExportButton from "../../../Components/Common/ExportButton";
-
 import DashboardLayout from "../../../Components/Dashboard/DashboardLayout";
 import TitleNav from "../../../Components/Dashboard/Title";
+import Loader from "../../../Components/Loader";
 import {
   fetchAllAyds,
   fetchAllDeaneries,
@@ -212,7 +212,9 @@ function ViewAYD() {
 
       <div>
         {delegatesLoading ? (
-          <h4 className="text-center my-[3rem] text-[700]">LOADING...</h4>
+          <div className="flex justify-center items-center my-[4rem]">
+            <Loader big />
+          </div>
         ) : delegateError ? (
           <div className="text-center my-[2rem]">
             <p className="text-red-600">{delegateError}</p>
