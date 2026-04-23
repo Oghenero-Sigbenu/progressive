@@ -43,6 +43,8 @@ export const resetPassword = (payload) =>
 export const postParish = (payload) => privateHttp.post("/parish", payload);
 export const updateParish = ({ parishId, parishData }) =>
   privateHttp.put(`/parish/${parishId}`, parishData);
+export const deleteParish = (parishId) =>
+  privateHttp.delete(`/parish/${parishId}`);
 export const fetchAllParish = () => http.get("/parish");
 export const fetchAllPaidParish = () => http.get("/parish/paid-parishes");
 export const fetchParishById = (id) => http.get(`/parish/${id}`);

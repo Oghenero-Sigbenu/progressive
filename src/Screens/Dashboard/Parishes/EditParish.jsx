@@ -20,6 +20,7 @@ const EditParish = () => {
   const [menuOpen, setMenuOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const [show, setShow] = useState(false);
+  const [parishLoading, setParishLoading] = useState(false);
   const [deaneries, setDeaneries] = useState([]);
   const [loadingDeaneries, setLoadingDeaneries] = useState(false);
   const [deaneryError, setDeaneryError] = useState(null);
@@ -86,6 +87,7 @@ const EditParish = () => {
   };
 
   const getParishById = async () => {
+    setParishLoading(true);
     setParishLoadError(null);
     try {
       const res = await fetchParishById(id);
@@ -94,6 +96,8 @@ const EditParish = () => {
       else setParishLoadError("Parish not found");
     } catch (error) {
       setParishLoadError(apiErrorMessage(error, "Could not load parish"));
+    } finally {
+      setParishLoading(false);
     }
   };
 
@@ -125,8 +129,10 @@ const EditParish = () => {
               Retry
             </button>
           </p>
-        ) : !parishDetails || Object.keys(parishDetails).length === 0 ? (
-          <p className="mt-6 text-center">Loading…</p>
+        ) : parishLoading || !parishDetails || Object.keys(parishDetails).length === 0 ? (
+          <div className="flex justify-center items-center my-[4rem]">
+            <Loader big />
+          </div>
         ) : (
           <form
             className="w-[97%] my-[2rem] px-[1rem] mx-auto"

@@ -1,38 +1,47 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import ExportButton from "../../../Components/Common/ExportButton";
-
 import DashboardLayout from "../../../Components/Dashboard/DashboardLayout";
 import TitleNav from "../../../Components/Dashboard/Title";
-import { fetchAllDeaneries, fetchAllParish } from "../../../Redux/Api";
+import Loader from "../../../Components/Loader";
+import {
+  deleteParish,
+  fetchAllDeaneries,
+  fetchAllParish,
+} from "../../../Redux/Api";
+import { apiErrorMessage, safeFetchList } from "@/src/helpers/api";
 
 function ViewParishes() {
   const [parish, setParishes] = useState([]);
   const [deaneries, setDeaneries] = useState([]);
-  const [newParishes, setNewParishes] = useState([]);
   const [menuOpen, setMenuOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
+  const [loadingParishes, setLoadingParishes] = useState(false);
+  const [loadingDeaneries, setLoadingDeaneries] = useState(false);
+  const [parishError, setParishError] = useState(null);
+  const [deaneryError, setDeaneryError] = useState(null);
+  const [deletingId, setDeletingId] = useState("");
+  const [feedback, setFeedback] = useState(null);
+
   const fetchParishes = async () => {
-    try {
-      const { data } = await fetchAllParish();
-      if (data) {
-        setParishes(data);
-      }
-    } catch (error) {
-      console.error("Error fetching data:", error);
-    }
+    setLoadingParishes(true);
+    setParishError(null);
+    const { items, error } = await safeFetchList(fetchAllParish);
+    setParishes(items);
+    setParishError(error);
+    if (error) console.error("Error fetching parishes:", error);
+    setLoadingParishes(false);
   };
 
   const fetchDeanery = async () => {
-    try {
-      const { data } = await fetchAllDeaneries();
-      if (data) {
-        setDeaneries(data);
-      }
-    } catch (error) {
-      console.error("Error fetching data:", error);
-    }
+    setLoadingDeaneries(true);
+    setDeaneryError(null);
+    const { items, error } = await safeFetchList(fetchAllDeaneries);
+    setDeaneries(items);
+    setDeaneryError(error);
+    if (error) console.error("Error fetching deaneries:", error);
+    setLoadingDeaneries(false);
   };
 
   useEffect(() => {
@@ -44,46 +53,68 @@ function ViewParishes() {
     // eslint-disable-next-line
   }, []);
 
-  const getDeaneryName = (id) => {
-    const deanName = deaneries.filter((item) => item.id.includes(id));
-    return deanName[0]?.name;
-  };
+  const deaneryNameById = useMemo(() => {
+    return deaneries.reduce((acc, item) => {
+      if (item?.id) acc[item.id] = item?.name;
+      return acc;
+    }, {});
+  }, [deaneries]);
 
-  useEffect(() => {
-    alterArray();
-    // eslint-disable-next-line
-  }, [parish]);
-
-  const alterArray = async () => {
-    parish?.forEach((item, index, arr) => {
-      const deaneryId = getDeaneryName(item?.deaneryId);
-      arr[index] = {
+  const newParishes = useMemo(() => {
+    return [...parish]
+      .map((item) => ({
         ...item,
-        deaneryId: deaneryId,
-      };
+        deaneryId: deaneryNameById[item?.deaneryId] || item?.deaneryId,
+      }))
+      .sort((a, b) => {
+        if (a.deaneryId < b.deaneryId) return -1;
+        if (a.deaneryId > b.deaneryId) return 1;
+        return 0;
+      });
+  }, [deaneryNameById, parish]);
 
-      setNewParishes(arr);
-    });
-  };
-
-  // Sorting the array by the 'name' property
-  newParishes.sort((a, b) => {
-    if (a.deaneryId < b.deaneryId) {
-      return -1;
-    }
-    if (a.deaneryId > b.deaneryId) {
-      return 1;
-    }
-    return 0;
-  });
-
-  const filteredItems = newParishes?.filter((parish) =>
-    parish?.name?.toLowerCase().includes(searchTerm.toLowerCase())
+  const filteredItems = newParishes?.filter((item) =>
+    item?.name?.toLowerCase().includes(searchTerm.toLowerCase()),
   );
 
   const onInputChange = (search) => {
     setSearchTerm(search);
   };
+
+  const handleDeleteParish = async (item) => {
+    if (!item?.id) return;
+
+    const shouldDelete =
+      typeof window === "undefined" ||
+      window.confirm(`Delete "${item.name}"? This action cannot be undone.`);
+
+    if (!shouldDelete) return;
+
+    setFeedback(null);
+    setDeletingId(item.id);
+
+    try {
+      await deleteParish(item.id);
+      setParishes((prev) => prev.filter((parishItem) => parishItem.id !== item.id));
+      setFeedback({
+        type: "success",
+        message: `${item.name} deleted successfully.`,
+      });
+    } catch (error) {
+      const message = apiErrorMessage(error, "Could not delete parish.");
+      setFeedback({
+        type: "error",
+        message,
+      });
+      console.error("Error deleting parish:", error.response || error);
+    } finally {
+      setDeletingId("");
+    }
+  };
+
+  const isLoading = loadingParishes || loadingDeaneries;
+  const hasLoadError = parishError || deaneryError;
+
   return (
     <DashboardLayout>
       <div className="sticky top-0 z-[20] bg-white">
@@ -97,6 +128,37 @@ function ViewParishes() {
         <ExportButton data={newParishes} fileName={"AYD Registered Parishes"} />
       </div>
       <div className="w-full">
+        {feedback && (
+          <p
+            className={`w-[80%] mx-auto mt-4 text-center ${
+              feedback.type === "error" ? "text-red-600" : "text-green"
+            }`}
+          >
+            {feedback.message}
+          </p>
+        )}
+
+        {hasLoadError && (
+          <div className="w-[80%] mx-auto mt-4 text-center text-sm text-red-600">
+            {parishError && (
+              <span>
+                {parishError}{" "}
+                <button type="button" onClick={fetchParishes} className="underline">
+                  Retry parishes
+                </button>
+              </span>
+            )}{" "}
+            {deaneryError && (
+              <span>
+                {deaneryError}{" "}
+                <button type="button" onClick={fetchDeanery} className="underline">
+                  Retry deaneries
+                </button>
+              </span>
+            )}
+          </div>
+        )}
+
         <div className="flex my-4 rounded-[5px] bg-primary mx-auto items-center w-[80%] md:w-[400px]">
           <input
             placeholder="Search Parish name "
@@ -105,7 +167,16 @@ function ViewParishes() {
           />
           <p className="px-[.5rem] text-white">Search</p>
         </div>
-        {newParishes?.length !== 0 && (
+
+        {isLoading && newParishes.length === 0 ? (
+          <div className="flex justify-center items-center my-[4rem]">
+            <Loader big />
+          </div>
+        ) : filteredItems.length === 0 ? (
+          <p className="text-center my-[3rem] text-primary">
+            {searchTerm ? "No parishes match your search." : "No parishes available."}
+          </p>
+        ) : (
           <table className="table-fixed border w-[96%] mx-auto mb-[2.5rem] ">
             <thead>
               <tr className="border-b text-[10px] md:text-[14px]">
@@ -113,35 +184,44 @@ function ViewParishes() {
                 <th className=" py-[.5rem]  w-[120px] md:w-auto">Name</th>
                 <th className=" py-[.5rem] w-[50px]  md:w-[90px]">Deanery</th>
                 <th className=" py-[.5rem] w-[30px] md:w-[90px]">Paid</th>
-                <th className=" py-[.5rem] w-[20px] md:w-[90px]">Action</th>
+                <th className=" py-[.5rem] w-[120px] md:w-[180px]">Action</th>
               </tr>
             </thead>
             <tbody>
-              {filteredItems &&
-                filteredItems?.map((item, index) => (
-                  <tr className="text-center" key={index}>
-                    <td className="text-center text-[.6rem] md:text-[1rem] border py-[.5rem] w-[90px]">
-                      {index + 1}
-                    </td>
-                    <td className="text-center text-[.6rem] md:text-[1rem] border py-[.5rem]">
-                      {item?.name}
-                    </td>
-                    <td className="text-center  text-[.5rem] md:text-[1rem] border py-[.5rem]">
-                      {item?.deaneryId}
-                    </td>
-                    <td className="text-center text-[.6rem] md:text-[1rem] border py-[.5rem]">
-                      {item?.hasPaid === true ? "Yes" : "No"}
-                    </td>
-                    <td className="text-center border  text-[10px] md:text-[14px] py-[.5rem]">
+              {filteredItems.map((item, index) => (
+                <tr className="text-center" key={item?.id || index}>
+                  <td className="text-center text-[.6rem] md:text-[1rem] border py-[.5rem] w-[90px]">
+                    {index + 1}
+                  </td>
+                  <td className="text-center text-[.6rem] md:text-[1rem] border py-[.5rem]">
+                    {item?.name}
+                  </td>
+                  <td className="text-center  text-[.5rem] md:text-[1rem] border py-[.5rem]">
+                    {item?.deaneryId}
+                  </td>
+                  <td className="text-center text-[.6rem] md:text-[1rem] border py-[.5rem]">
+                    {item?.hasPaid === true ? "Yes" : "No"}
+                  </td>
+                  <td className="text-center border text-[10px] md:text-[14px] py-[.5rem]">
+                    <div className="flex justify-center items-center gap-3">
                       <a
-                        href={`/dashboard/parishes/${item?.id} `}
+                        href={`/dashboard/parishes/${item?.id}`}
                         className="text-[green] hover:cursor-pointer"
                       >
                         Edit
                       </a>
-                    </td>
-                  </tr>
-                ))}
+                      <button
+                        type="button"
+                        onClick={() => handleDeleteParish(item)}
+                        disabled={deletingId === item?.id}
+                        className="text-red-600 disabled:opacity-60"
+                      >
+                        {deletingId === item?.id ? "Deleting..." : "Delete"}
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              ))}
             </tbody>
           </table>
         )}
