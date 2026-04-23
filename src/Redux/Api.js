@@ -51,7 +51,8 @@ export const fetchParishById = (id) => http.get(`/parish/${id}`);
 
 // DEANERY
 export const postDeanery = (payload) => privateHttp.post("/deanery", payload);
-export const fetchAllDeaneries = () => http.get("/deanery");
+export const fetchAllDeaneries = () =>
+  http.get(`/deanery?page=${1}&limit=${30}`);
 export const fetchAllPaidParishByDeanery = (deaneryId) =>
   http.get(`/deanery/${deaneryId}/paid-parishes`);
 
