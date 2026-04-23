@@ -68,7 +68,7 @@ function ViewDeanries() {
               <tr className="border-b">
                 <th className=" py-[.5rem] w-[90px]">S/N</th>
                 <th className=" py-[.5rem]">Name</th>
-                <th className=" py-[.5rem]">Phone</th>
+                {/* <th className=" py-[.5rem]">Phone</th> */}
               </tr>
             </thead>
             <tbody>
@@ -78,7 +78,7 @@ function ViewDeanries() {
                   <td className="text-center uppercase border py-[.5rem]">
                     {item?.name}
                   </td>
-                  <td>{item?.phoneNumber}</td>
+                  {/* <td>{item?.phoneNumber}</td> */}
                 </tr>
               ))}
             </tbody>
