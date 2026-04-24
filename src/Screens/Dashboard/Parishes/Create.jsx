@@ -19,7 +19,7 @@ const initialSignUpData = {
 const validateParish = (values) => {
   const errors = {};
   const trimmedName = values.name?.trim() || "";
-  const trimmedLocation = values.location?.trim() || "";
+  // const trimmedLocation = values.location?.trim() || "";
 
   if (isEmpty(trimmedName)) {
     errors.name = "Parish name is required.";
@@ -43,11 +43,7 @@ const validateParish = (values) => {
     errors.hasPaid = "Please choose the AYD payment status.";
   }
 
-  if (isEmpty(trimmedLocation)) {
-    errors.location = "Address is required.";
-  } else if (trimmedLocation.length < 5) {
-    errors.location = "Address must be at least 5 characters.";
-  }
+  // Address/location is now optional, so no validation required.
 
   return errors;
 };
@@ -360,8 +356,8 @@ const CreateParish = () => {
 
             <div className="mt-[18px] w-full md:w-[49%]">
               <label className="mb-[15px] text-[.8rem]">
-                Address <span className="text-red-600">*</span>
-              </label>
+                  Address
+                </label>
               <div
                 className={`w-full flex rounded-[10px] shadow-sm mt-[.5rem] h-[54px] justify-between items-center border ${
                   isFieldInvalid("location")
