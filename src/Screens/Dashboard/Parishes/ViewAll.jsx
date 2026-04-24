@@ -23,6 +23,9 @@ function ViewParishes() {
   const [deaneryError, setDeaneryError] = useState(null);
   const [deletingId, setDeletingId] = useState("");
   const [feedback, setFeedback] = useState(null);
+  // Pagination state
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 10;
 
   const fetchParishes = async () => {
     setLoadingParishes(true);
@@ -73,12 +76,22 @@ function ViewParishes() {
       });
   }, [deaneryNameById, parish]);
 
+
   const filteredItems = newParishes?.filter((item) =>
     item?.name?.toLowerCase().includes(searchTerm.toLowerCase()),
   );
 
+  // Pagination logic
+  const totalPages = Math.ceil(filteredItems.length / itemsPerPage);
+  const paginatedItems = filteredItems.slice(
+    (currentPage - 1) * itemsPerPage,
+    currentPage * itemsPerPage
+  );
+
+
   const onInputChange = (search) => {
     setSearchTerm(search);
+    setCurrentPage(1); // Reset to first page on search
   };
 
   const handleDeleteParish = async (item) => {
@@ -177,53 +190,75 @@ function ViewParishes() {
             {searchTerm ? "No parishes match your search." : "No parishes available."}
           </p>
         ) : (
-          <table className="table-fixed border w-[96%] mx-auto mb-[2.5rem] ">
-            <thead>
-              <tr className="border-b text-[10px] md:text-[14px]">
-                <th className=" py-[.5rem]  w-[30px] md:w-[90px]">S/N</th>
-                <th className=" py-[.5rem]  w-[120px] md:w-auto">Name</th>
-                <th className=" py-[.5rem] w-[50px]  md:w-[90px]">Deanery</th>
-                <th className=" py-[.5rem] w-[30px] md:w-[90px]">Paid</th>
-                <th className=" py-[.5rem] w-[120px] md:w-[180px]">Action</th>
-              </tr>
-            </thead>
-            <tbody>
-              {filteredItems.map((item, index) => (
-                <tr className="text-center" key={item?.id || index}>
-                  <td className="text-center text-[.6rem] md:text-[1rem] border py-[.5rem] w-[90px]">
-                    {index + 1}
-                  </td>
-                  <td className="text-center text-[.6rem] md:text-[1rem] border py-[.5rem]">
-                    {item?.name}
-                  </td>
-                  <td className="text-center  text-[.5rem] md:text-[1rem] border py-[.5rem]">
-                    {item?.deaneryId}
-                  </td>
-                  <td className="text-center text-[.6rem] md:text-[1rem] border py-[.5rem]">
-                    {item?.hasPaid === true ? "Yes" : "No"}
-                  </td>
-                  <td className="text-center border text-[10px] md:text-[14px] py-[.5rem]">
-                    <div className="flex justify-center items-center gap-3">
-                      <a
-                        href={`/dashboard/parishes/${item?.id}`}
-                        className="text-[green] hover:cursor-pointer"
-                      >
-                        Edit
-                      </a>
-                      <button
-                        type="button"
-                        onClick={() => handleDeleteParish(item)}
-                        disabled={deletingId === item?.id}
-                        className="text-red-600 disabled:opacity-60"
-                      >
-                        {deletingId === item?.id ? "Deleting..." : "Delete"}
-                      </button>
-                    </div>
-                  </td>
+          <>
+            <table className="table-fixed border w-[96%] mx-auto mb-[2.5rem] ">
+              <thead>
+                <tr className="border-b text-[10px] md:text-[14px]">
+                  <th className=" py-[.5rem]  w-[30px] md:w-[90px]">S/N</th>
+                  <th className=" py-[.5rem]  w-[120px] md:w-auto">Name</th>
+                  <th className=" py-[.5rem] w-[50px]  md:w-[90px]">Deanery</th>
+                  <th className=" py-[.5rem] w-[30px] md:w-[90px]">Paid</th>
+                  <th className=" py-[.5rem] w-[120px] md:w-[180px]">Action</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody>
+                {paginatedItems.map((item, index) => (
+                  <tr className="text-center" key={item?.id || index}>
+                    <td className="text-center text-[.6rem] md:text-[1rem] border py-[.5rem] w-[90px]">
+                      {(currentPage - 1) * itemsPerPage + index + 1}
+                    </td>
+                    <td className="text-center text-[.6rem] md:text-[1rem] border py-[.5rem]">
+                      {item?.name}
+                    </td>
+                    <td className="text-center  text-[.5rem] md:text-[1rem] border py-[.5rem]">
+                      {item?.deaneryId}
+                    </td>
+                    <td className="text-center text-[.6rem] md:text-[1rem] border py-[.5rem]">
+                      {item?.hasPaid === true ? "Yes" : "No"}
+                    </td>
+                    <td className="text-center border text-[10px] md:text-[14px] py-[.5rem]">
+                      <div className="flex justify-center items-center gap-3">
+                        <a
+                          href={`/dashboard/parishes/${item?.id}`}
+                          className="text-[green] hover:cursor-pointer"
+                        >
+                          Edit
+                        </a>
+                        <button
+                          type="button"
+                          onClick={() => handleDeleteParish(item)}
+                          disabled={deletingId === item?.id}
+                          className="text-red-600 disabled:opacity-60"
+                        >
+                          {deletingId === item?.id ? "Deleting..." : "Delete"}
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+            {/* Pagination Controls */}
+            <div className="flex justify-center items-center gap-2 mb-8">
+              <button
+                className="px-3 py-1 rounded bg-gray-200 disabled:opacity-50"
+                onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
+                disabled={currentPage === 1}
+              >
+                Prev
+              </button>
+              <span className="mx-2">
+                Page {currentPage} of {totalPages}
+              </span>
+              <button
+                className="px-3 py-1 rounded bg-gray-200 disabled:opacity-50"
+                onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
+                disabled={currentPage === totalPages || totalPages === 0}
+              >
+                Next
+              </button>
+            </div>
+          </>
         )}
       </div>
     </DashboardLayout>

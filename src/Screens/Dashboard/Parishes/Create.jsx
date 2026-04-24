@@ -364,9 +364,7 @@ const CreateParish = () => {
             </div>
 
             <div className="mt-[18px] w-full md:w-[49%]">
-              <label className="mb-[15px] text-[.8rem]">
-                  Address
-                </label>
+              <label className="mb-[15px] text-[.8rem]">Address</label>
               <div
                 className={`w-full flex rounded-[10px] shadow-sm mt-[.5rem] h-[54px] justify-between items-center border ${
                   isFieldInvalid("location")
