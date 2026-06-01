@@ -14,7 +14,6 @@ import { apiErrorMessage, safeFetchList } from "@/src/helpers/api";
 
 function ViewParishes() {
   const [parish, setParishes] = useState([]);
-  const [deaneries, setDeaneries] = useState([]);
   const [menuOpen, setMenuOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
   const [loadingParishes, setLoadingParishes] = useState(false);
@@ -25,15 +24,35 @@ function ViewParishes() {
   const [feedback, setFeedback] = useState(null);
   // Pagination state
   const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 10;
+  const [totalPages, setTotalPages] = useState(1);
+  const [totalItems, setTotalItems] = useState(0);
+  const itemsPerPage = 20;
 
-  const fetchParishes = async () => {
+  const fetchParishes = async (page = 1, search = "") => {
     setLoadingParishes(true);
     setParishError(null);
-    const { items, error } = await safeFetchList(fetchAllParish);
-    setParishes(items);
-    setParishError(error);
-    if (error) console.error("Error fetching parishes:", error);
+    try {
+      // API: /parish?page=1&pageSize=20&search=xxx
+      const res = await fetchAllParish({
+        page,
+        pageSize: itemsPerPage,
+        search,
+      });
+      // If fetchAllParish does not accept params, use axios directly:
+      // const res = await axios.get(
+      //   `/parish?page=${page}&pageSize=${itemsPerPage}&search=${search}`,
+      // );
+      const data = res?.data?.data;
+      setParishes(data?.items || []);
+      setTotalPages(data?.pages || 1);
+      setTotalItems(data?.total || 0);
+      setCurrentPage(data?.page || 1);
+    } catch (error) {
+      setParishError(error?.message || "Error fetching parishes");
+      setParishes([]);
+      setTotalPages(1);
+      setTotalItems(0);
+    }
     setLoadingParishes(false);
   };
 
@@ -48,7 +67,8 @@ function ViewParishes() {
   };
 
   useEffect(() => {
-    fetchParishes();
+    fetchParishes(1, "");
+    // eslint-disable-next-line
   }, []);
 
   useEffect(() => {
@@ -56,42 +76,17 @@ function ViewParishes() {
     // eslint-disable-next-line
   }, []);
 
-  const deaneryNameById = useMemo(() => {
-    return deaneries.reduce((acc, item) => {
-      if (item?.id) acc[item.id] = item?.name;
-      return acc;
-    }, {});
-  }, [deaneries]);
-
+  // Use deanery name from payload structure
   const newParishes = useMemo(() => {
-    return [...parish]
-      .map((item) => ({
-        ...item,
-        deaneryId: deaneryNameById[item?.deaneryId] || item?.deaneryId,
-      }))
-      .sort((a, b) => {
-        if (a.deaneryId < b.deaneryId) return -1;
-        if (a.deaneryId > b.deaneryId) return 1;
-        return 0;
-      });
-  }, [deaneryNameById, parish]);
-
-
-  const filteredItems = newParishes?.filter((item) =>
-    item?.name?.toLowerCase().includes(searchTerm.toLowerCase()),
-  );
-
-  // Pagination logic
-  const totalPages = Math.ceil(filteredItems.length / itemsPerPage);
-  const paginatedItems = filteredItems.slice(
-    (currentPage - 1) * itemsPerPage,
-    currentPage * itemsPerPage
-  );
-
+    return parish.map((item) => ({
+      ...item,
+      deaneryName: item.Deanery?.name || "-",
+    }));
+  }, [parish]);
 
   const onInputChange = (search) => {
     setSearchTerm(search);
-    setCurrentPage(1); // Reset to first page on search
+    fetchParishes(1, search);
   };
 
   const handleDeleteParish = async (item) => {
@@ -108,7 +103,9 @@ function ViewParishes() {
 
     try {
       await deleteParish(item.id);
-      setParishes((prev) => prev.filter((parishItem) => parishItem.id !== item.id));
+      setParishes((prev) =>
+        prev.filter((parishItem) => parishItem.id !== item.id),
+      );
       setFeedback({
         type: "success",
         message: `${item.name} deleted successfully.`,
@@ -156,7 +153,11 @@ function ViewParishes() {
             {parishError && (
               <span>
                 {parishError}{" "}
-                <button type="button" onClick={fetchParishes} className="underline">
+                <button
+                  type="button"
+                  onClick={fetchParishes}
+                  className="underline"
+                >
                   Retry parishes
                 </button>
               </span>
@@ -164,7 +165,11 @@ function ViewParishes() {
             {deaneryError && (
               <span>
                 {deaneryError}{" "}
-                <button type="button" onClick={fetchDeanery} className="underline">
+                <button
+                  type="button"
+                  onClick={fetchDeanery}
+                  className="underline"
+                >
                   Retry deaneries
                 </button>
               </span>
@@ -185,9 +190,11 @@ function ViewParishes() {
           <div className="flex justify-center items-center my-[4rem]">
             <Loader big />
           </div>
-        ) : filteredItems.length === 0 ? (
+        ) : newParishes.length === 0 ? (
           <p className="text-center my-[3rem] text-primary">
-            {searchTerm ? "No parishes match your search." : "No parishes available."}
+            {searchTerm
+              ? "No parishes match your search."
+              : "No parishes available."}
           </p>
         ) : (
           <>
@@ -202,7 +209,7 @@ function ViewParishes() {
                 </tr>
               </thead>
               <tbody>
-                {paginatedItems.map((item, index) => (
+                {newParishes.map((item, index) => (
                   <tr className="text-center" key={item?.id || index}>
                     <td className="text-center text-[.6rem] md:text-[1rem] border py-[.5rem] w-[90px]">
                       {(currentPage - 1) * itemsPerPage + index + 1}
@@ -211,7 +218,7 @@ function ViewParishes() {
                       {item?.name}
                     </td>
                     <td className="text-center  text-[.5rem] md:text-[1rem] border py-[.5rem]">
-                      {item?.deaneryId}
+                      {item?.deaneryName}
                     </td>
                     <td className="text-center text-[.6rem] md:text-[1rem] border py-[.5rem]">
                       {item?.hasPaid === true ? "Yes" : "No"}
@@ -242,7 +249,10 @@ function ViewParishes() {
             <div className="flex justify-center items-center gap-2 mb-8">
               <button
                 className="px-3 py-1 rounded bg-gray-200 disabled:opacity-50"
-                onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
+                onClick={() => {
+                  if (currentPage > 1)
+                    fetchParishes(currentPage - 1, searchTerm);
+                }}
                 disabled={currentPage === 1}
               >
                 Prev
@@ -252,7 +262,10 @@ function ViewParishes() {
               </span>
               <button
                 className="px-3 py-1 rounded bg-gray-200 disabled:opacity-50"
-                onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
+                onClick={() => {
+                  if (currentPage < totalPages)
+                    fetchParishes(currentPage + 1, searchTerm);
+                }}
                 disabled={currentPage === totalPages || totalPages === 0}
               >
                 Next
