@@ -12,14 +12,16 @@ import {
   fetchAllParish,
   getAllAydDelegates,
 } from "../../Redux/Api";
-import { safeFetchList } from "../../helpers/api";
+import { safeFetchList, safeFetchPaginated } from "../../helpers/api";
 
 function Dashboard() {
   const [menuOpen, setMenuOpen] = useState(false);
-  const [delegates, setDelegates] = useState([]);
-  const [parish, setParishes] = useState([]);
+  // Counts come from the `total` of paginated endpoints (not array length,
+  // which is capped by page size). Paid parishes is an unpaginated list.
+  const [delegateCount, setDelegateCount] = useState(0);
+  const [parishCount, setParishCount] = useState(0);
   const [paidParish, setPaidParishes] = useState([]);
-  const [deaneries, setDeaneries] = useState([]);
+  const [deaneryCount, setDeaneryCount] = useState(0);
   const [loading, setLoading] = useState(false);
   const [loadError, setLoadError] = useState(null);
 
@@ -29,16 +31,22 @@ function Dashboard() {
 
     const [delegatesRes, parishesRes, paidParishesRes, deaneriesRes] =
       await Promise.all([
-        safeFetchList(getAllAydDelegates, "d4446769-a75d-4b45-b213-5faa2ea9cd2c"),
-        safeFetchList(fetchAllParish),
+        // No aydId → backend returns delegates across all AYDs, so the
+        // card reflects the true total registered count (axios omits the
+        // undefined aydId param).
+        safeFetchPaginated(getAllAydDelegates, undefined, {
+          page: 1,
+          limit: 1,
+        }),
+        safeFetchPaginated(fetchAllParish, { page: 1, limit: 1 }),
         safeFetchList(fetchAllPaidParish),
-        safeFetchList(fetchAllDeaneries),
+        safeFetchPaginated(fetchAllDeaneries, { page: 1, limit: 1 }),
       ]);
 
-    setDelegates(delegatesRes.items);
-    setParishes(parishesRes.items);
+    setDelegateCount(delegatesRes.total);
+    setParishCount(parishesRes.total);
     setPaidParishes(paidParishesRes.items);
-    setDeaneries(deaneriesRes.items);
+    setDeaneryCount(deaneriesRes.total);
 
     const errors = [
       delegatesRes.error,
@@ -84,17 +92,17 @@ function Dashboard() {
           ) : (
             <div className="flex gap-3 items-center h-full mx-auto mt-[2rem] flex-wrap w-[96%]">
               <Card
-                text={deaneries?.length}
+                text={deaneryCount}
                 title={"Deaneries"}
                 icon={<IoHome className="w-[2rem] h-[2rem] text-green" />}
               />
               <Card
-                text={parish?.length}
+                text={parishCount}
                 title={" Parish Created"}
                 icon={<IoHome className="w-[2rem] h-[2rem] text-green" />}
               />
               <Card
-                text={delegates?.length}
+                text={delegateCount}
                 title={"Registered Delegates"}
                 icon={<IoPeople className="w-[2rem] h-[2rem] text-green" />}
               />
