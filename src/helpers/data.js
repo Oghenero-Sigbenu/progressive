@@ -47,7 +47,7 @@ import _News1 from "../Assests/news1.jpeg";
 import _News2 from "../Assests/news2.jpeg";
 import _News3 from "../Assests/news3.jpeg";
 import _News4 from "../Assests/news4.jpeg";
-import { RiHome6Line } from "react-icons/ri";
+import { RiHome6Line, RiGroupLine } from "react-icons/ri";
 import { MdOutlineExplore } from "react-icons/md";
 import { BsFillHousesFill } from "react-icons/bs";
 import _Krisz from "../Assests/Krisz.jpeg";
@@ -151,6 +151,12 @@ export const privateRoute = [
     title: "AYD",
     sub: true,
     subMenu: [{ path: "/dashboard/delegates", title: "Delegates" }],
+  },
+  {
+    path: "/dashboard/users",
+    title: "Users",
+    sub: false,
+    icon: <RiGroupLine className="" />,
   },
 ];
 

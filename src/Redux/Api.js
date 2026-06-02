@@ -45,14 +45,19 @@ export const updateParish = ({ parishId, parishData }) =>
   privateHttp.put(`/parish/${parishId}`, parishData);
 export const deleteParish = (parishId) =>
   privateHttp.delete(`/parish/${parishId}`);
-export const fetchAllParish = () => http.get("/parish");
+export const fetchAllParish = ({ page = 1, limit = 20, search = "" } = {}) =>
+  http.get("/parish", {
+    params: { page, limit, ...(search ? { search } : {}) },
+  });
 export const fetchAllPaidParish = () => http.get("/parish/paid-parishes");
 export const fetchParishById = (id) => http.get(`/parish/${id}`);
 
 // DEANERY
 export const postDeanery = (payload) => privateHttp.post("/deanery", payload);
-export const fetchAllDeaneries = () =>
-  http.get(`/deanery?page=${1}&limit=${30}`);
+// Default limit is the backend max (100) so dropdown / name-lookup callers
+// receive the full set; the Deaneries table overrides page + limit explicitly.
+export const fetchAllDeaneries = ({ page = 1, limit = 100 } = {}) =>
+  http.get("/deanery", { params: { page, limit } });
 export const fetchAllPaidParishByDeanery = (deaneryId) =>
   http.get(`/deanery/${deaneryId}/paid-parishes`);
 
@@ -61,9 +66,14 @@ export const fetchAllAyds = () => http.get("/ayd");
 export const fetchActiveAyd = () => http.get("/ayd/active");
 export const aydDelegateRegistration = (payload) =>
   http.post("/delegate/new", payload);
-export const getAllAydDelegates = (id) =>
-  privateHttp.get(`/delegate?aydId=${id}`);
+export const getAllAydDelegates = (id, { page = 1, limit = 20, search = "" } = {}) =>
+  privateHttp.get("/delegate", {
+    params: { aydId: id, page, limit, ...(search ? { search } : {}) },
+  });
 
 // USERS
-export const fetchUsers = () => privateHttp.get("/user");
+export const fetchUsers = ({ page = 1, limit = 20, search = "" } = {}) =>
+  privateHttp.get("/user", {
+    params: { page, limit, ...(search ? { search } : {}) },
+  });
 export const fetchMe = () => privateHttp.get("/user/me");

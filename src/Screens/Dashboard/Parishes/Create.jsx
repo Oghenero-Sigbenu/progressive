@@ -108,13 +108,22 @@ const CreateParish = () => {
     setTouched({});
   };
 
-  const buildPayload = () => ({
-    ...signUpData,
-    name: signUpData.name.trim(),
-    email: signUpData.email.trim(),
-    location: signUpData.location.trim(),
-    hasPaid: Number(signUpData.hasPaid),
-  });
+  const buildPayload = () => {
+    const payload = {
+      ...signUpData,
+      name: signUpData.name.trim(),
+      location: signUpData.location.trim(),
+      hasPaid: Number(signUpData.hasPaid),
+    };
+    // Only include email if it is not empty after trimming
+    const trimmedEmail = signUpData.email.trim();
+    if (trimmedEmail) {
+      payload.email = trimmedEmail;
+    } else {
+      delete payload.email;
+    }
+    return payload;
+  };
 
   const fieldIds = {
     name: "parish-name-error",
@@ -355,9 +364,7 @@ const CreateParish = () => {
             </div>
 
             <div className="mt-[18px] w-full md:w-[49%]">
-              <label className="mb-[15px] text-[.8rem]">
-                  Address
-                </label>
+              <label className="mb-[15px] text-[.8rem]">Address</label>
               <div
                 className={`w-full flex rounded-[10px] shadow-sm mt-[.5rem] h-[54px] justify-between items-center border ${
                   isFieldInvalid("location")
