@@ -7,6 +7,7 @@ import { SelectField, TextField } from "./FormField";
 import StepShell from "./StepShell";
 import { useState } from "react";
 import { aydDelegateRegistration } from "../../Redux/Api";
+import { apiErrorMessage } from "../../helpers/api";
 
 const ContactOptions = ({
   requestData,
@@ -36,8 +37,10 @@ const ContactOptions = ({
     } catch (error) {
       setLoading(false);
       setSubmitError(
-        error?.response?.data?.msg ||
+        apiErrorMessage(
+          error,
           "We couldn't complete your registration. Please try again.",
+        ),
       );
       console.error("Error fetching data:", error.response);
     }
