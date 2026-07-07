@@ -112,7 +112,6 @@ export const navLinks = [
   { path: "/", title: "Home", sub: false },
   { path: "/about-us", title: "About Us", sub: false },
   { path: "/deaneries/", title: "Deaneries", sub: true },
-  { path: "/AYD", title: "AYD", sub: false },
   { path: "/news", title: "News", sub: false },
   { path: "/contact-us", title: "Contact Us", sub: false },
 ];
