@@ -24,7 +24,7 @@ const AYDLogo =
     : _img_AYDLogo;
 
 const STEP_LABELS = ["Deanery", "Parish", "Personal", "Contact"];
-const REGISTRATION_OPEN = true;
+const REGISTRATION_OPEN = false;
 
 const AYDModal = () => {
   const initialState = {
@@ -113,6 +113,7 @@ const AYDModal = () => {
   };
 
   useEffect(() => {
+    if (!REGISTRATION_OPEN) return;
     fetchDeaneries();
     loadActiveAyd();
     // eslint-disable-next-line
@@ -309,8 +310,8 @@ const AYDModal = () => {
                         <ResultCard
                           key="closed"
                           tone="neutral"
-                          title="Registration is closed"
-                          message="Thank you. Registration for the Archdiocesan Youth Day has officially closed."
+                          title="AYD 2026 Registration Has Ended"
+                          message="Thank you for your interest. Registration for Archdiocesan Youth Day 2026 has officially ended."
                         />
                       )}
                     </AnimatePresence>
