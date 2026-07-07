@@ -55,7 +55,7 @@ import _Dee from "../Assests/dee.jpeg";
 import _MaryChap from "../Assests/MaryChap.jpeg";
 
 // Unwrap Next.js StaticImageData -> URL string (matches CRA's import semantics)
-const _srcOf = (v) => (v && typeof v === 'object' && 'src' in v ? v.src : v);
+const _srcOf = (v) => (v && typeof v === "object" && "src" in v ? v.src : v);
 const Bishop = _srcOf(_Bishop);
 const Padre = _srcOf(_Padre);
 const Pres = _srcOf(_Pres);
