@@ -5,6 +5,9 @@ const withPWA = withPWAInit({
   register: true,
   skipWaiting: true,
   disable: process.env.NODE_ENV === "development",
+  // Keep large downloadables (the ~13MB AYD programme) out of the precache
+  // manifest — otherwise every first visit pulls it during SW install.
+  publicExcludes: ["!downloads/**/*"],
   fallbacks: {
     document: "/offline",
   },

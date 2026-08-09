@@ -138,7 +138,11 @@ const AYDModal = () => {
   const isFormStep = activeStep >= 1 && activeStep <= 4;
 
   return (
-    <section className="ayd-light relative min-h-screen w-full overflow-hidden bg-[#f7f5ef]">
+    <section
+      className={`ayd-light relative w-full overflow-hidden bg-[#f7f5ef] ${
+        REGISTRATION_OPEN ? "min-h-screen" : "min-h-[20vh]"
+      }`}
+    >
       {/* Cinematic backdrop */}
       <div aria-hidden className="pointer-events-none absolute inset-0">
         <div className="absolute inset-0 bg-mesh-gold bg-[length:200%_200%] animate-gradient-pan opacity-80" />
@@ -149,7 +153,11 @@ const AYDModal = () => {
         <div className="absolute inset-0 bg-gradient-to-b from-[#f7f5ef]/60 via-transparent to-[#f7f5ef]" />
       </div>
 
-      <div className="relative z-10 flex min-h-screen flex-col">
+      <div
+        className={`relative z-10 flex flex-col ${
+          REGISTRATION_OPEN ? "min-h-screen" : "min-h-[20vh]"
+        }`}
+      >
         {/* Header */}
         <header className="flex flex-col items-center gap-5 pt-10 md:pt-14 px-6 md:px-10">
           <motion.a
@@ -215,7 +223,7 @@ const AYDModal = () => {
         </header>
 
         {/* Form body */}
-        <div className="flex-1 flex items-center justify-center px-6 md:px-10 py-10 md:py-12">
+        {/* <div className="flex-1 flex items-center justify-center px-6 md:px-10 py-10 md:py-12">
           <motion.div
             initial={{ opacity: 0, y: 24 }}
             animate={{ opacity: 1, y: 0 }}
@@ -227,7 +235,6 @@ const AYDModal = () => {
             className="w-full max-w-2xl"
           >
             <div className="relative">
-              {/* Card gradient border */}
               <div className="absolute -inset-px rounded-3xl bg-gradient-to-br from-primary/50 via-primary/15 to-green/40 opacity-80 blur-[2px]" />
               <div className="relative rounded-3xl border border-black/10 bg-white/80 backdrop-blur-xl shadow-card-premium">
                 <div className="relative px-6 md:px-10 py-8 md:py-10">
@@ -320,11 +327,40 @@ const AYDModal = () => {
               </div>
             </div>
           </motion.div>
-        </div>
+        </div> */}
 
-        <footer className="py-6 text-center text-xs text-zinc-500">
-          &copy; CYON Archdiocese of Lagos
-        </footer>
+        {/* Cue toward the gallery + programme download below. The Layout
+            renders the real site footer at the end of the page. */}
+        <div className="pb-1 text-center">
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.6, delay: 0.9 }}
+            className="flex flex-col items-center gap-2"
+          >
+            <span className="text-[11px] uppercase tracking-[0.22em] text-zinc-500">
+              Highlights &amp; Programme below
+            </span>
+            <motion.span
+              animate={{ y: [0, 6, 0] }}
+              transition={{ duration: 1.8, repeat: Infinity, ease: "easeInOut" }}
+              className="flex h-9 w-9 items-center justify-center rounded-full border border-black/10 bg-white/70 text-primary-shade backdrop-blur-sm"
+            >
+              <svg
+                className="h-4 w-4"
+                viewBox="0 0 20 20"
+                fill="currentColor"
+                aria-hidden="true"
+              >
+                <path
+                  fillRule="evenodd"
+                  d="M5.23 7.21a.75.75 0 011.06.02L10 11.06l3.71-3.83a.75.75 0 111.08 1.04l-4.25 4.39a.75.75 0 01-1.08 0L5.21 8.27a.75.75 0 01.02-1.06z"
+                  clipRule="evenodd"
+                />
+              </svg>
+            </motion.span>
+          </motion.div>
+        </div>
       </div>
     </section>
   );

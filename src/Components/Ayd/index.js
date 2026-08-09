@@ -8,3 +8,5 @@ export { default as OtherServices } from "./OtherServices";
 export { default as FormField, TextField, SelectField } from "./FormField";
 export { default as StepShell } from "./StepShell";
 export { default as Stepper } from "./Stepper";
+export { default as AydGallery } from "./AydGallery";
+export { default as ProgrammeDownload } from "./ProgrammeDownload";
