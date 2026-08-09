@@ -17,6 +17,8 @@ import _Seminar from "../Assests/seminar.jpeg";
 import _AYD from "../Assests/AYD.jpeg";
 import _Pius from "../Assests/Pius.png";
 import _Prince from "../Assests/PRINCE.jpg";
+import _Welcome from "../Assests/welcome.jpeg";
+import _Banner from "../Assests/banner-ayd.jpeg";
 
 import _FestacC from "../Assests/Festac Pres.jpeg";
 import _FestacVC from "../Assests/vc.jpeg";
@@ -53,7 +55,7 @@ import { BsFillHousesFill } from "react-icons/bs";
 import _Krisz from "../Assests/Krisz.jpeg";
 import _Dee from "../Assests/dee.jpeg";
 import _MaryChap from "../Assests/MaryChap.jpeg";
-
+import _AYD2026 from "../Assests/banner-ayd.jpeg";
 // Unwrap Next.js StaticImageData -> URL string (matches CRA's import semantics)
 const _srcOf = (v) => (v && typeof v === "object" && "src" in v ? v.src : v);
 const Bishop = _srcOf(_Bishop);
@@ -73,8 +75,11 @@ const DOS = _srcOf(_DOS);
 const HeroImg = _srcOf(_HeroImg);
 const Seminar = _srcOf(_Seminar);
 const AYD = _srcOf(_AYD);
+const AYD2026 = _srcOf(_AYD2026);
 const Pius = _srcOf(_Pius);
 const Prince = _srcOf(_Prince);
+const Welcome = _srcOf(_Welcome);
+const Banner = _srcOf(_Banner);
 const FestacC = _srcOf(_FestacC);
 const FestacVC = _srcOf(_FestacVC);
 const FestacSec = _srcOf(_FestacSec);
@@ -113,6 +118,7 @@ export const navLinks = [
   { path: "/about-us", title: "About Us", sub: false },
   { path: "/deaneries/", title: "Deaneries", sub: true },
   { path: "/news", title: "News", sub: false },
+  { path: "/AYD", title: "AYD", sub: false },
   { path: "/contact-us", title: "Contact Us", sub: false },
 ];
 
@@ -398,7 +404,7 @@ export const events = [
   //   slogan: "HERE I AM...... SEND ME",
   // },
   {
-    eflier: AYD,
+    eflier: Banner,
     title: "Archdiocesan Youth Day(AYD)",
     description:
       "The 40th edition of the annual Archdiocesan Youth Day (AYD) will be co-hosted by the Maryland Deanery.",
@@ -406,7 +412,7 @@ export const events = [
     date: "9th of August, 2026",
     venue: "TBD",
     // url: "https://rb.gy/6ogrk6",
-    active: 1,
+    active: 0,
     host: "Maryland Deanery",
     slogan: "It's Mary's Land",
     deadline: "***",
@@ -1177,6 +1183,28 @@ export const deanery = [
         active: 0,
       },
     ],
+  },
+];
+
+export const aydProgramme = {
+  title: "AYD 2026 Programme of Events",
+  description:
+    "The full order of proceedings for the Archdiocesan Youth Day — Masses, sessions, schedules and venue details, all in one document.",
+  file: "/downloads/AYD-2026-PROGRAMME.pdf",
+  fileName: "AYD-2026-PROGRAMME.pdf",
+  meta: { type: "PDF", pages: 60, size: "13.5 MB" },
+};
+
+export const aydGallery = [
+  {
+    src: AYD2026,
+    alt: "Archdiocesan Youth Day 2026",
+    caption: "AYD 2026 ",
+  },
+  {
+    src: Welcome,
+    alt: "Archdiocesan Youth Day 2026 programme highlights",
+    caption: "AYD 2026 ",
   },
 ];
 
